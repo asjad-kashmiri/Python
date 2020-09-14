@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+
+import os
+import re
+import sys
+
+# Exit if a directory has not been provided
+if len(sys.argv) < 2:
+    print('Usage:    challenge1.py <directory>')
+    exit(1)
+
+
+most_common_IP = ''
+# Count of most common IP
+max_count = 0
+# Dictionary holding counts for all IP addresses
+ip_counts = {}
+# Dictionary holding lines from log files for IP addresses
+logs = {}
+
+# The directory we are scanning
+directory = sys.argv[1]
+print(f'Searching directory:\t\t{directory}')
+
+
+# Get all files under the provided directory
+for root, dirs, files in os.walk(directory):
+    # Regular expression
+    ip_regex = re.compile('[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
+
+    # Loop over each file contained in the directory's tree
+    for filename in files:
+        # Join the relative path with the directory path 
+        # to get the file's absolute path
+        filename = os.path.join(root, filename)
+        # Open the file and read it's content
+        f = open(filename, 'r', encoding="ISO-8859-1")
+        contents = f.readlines()
+        
+        # For each line in the file
+        for line in contents:
+            # Search for an IP address
+            matches = re.findall(ip_regex, line)
+
+            # The regex may return multiple IP addresses
+            # We need to loop through the matches
+            for ip in matches:
+                # If IP is in our dictionary, increment its count
+                if ip in ip_counts:
+                    ip_counts[ip] += 1
+                # Add the IP to our dictionary with a count of one
+                else:
+                    ip_counts[ip] = 1
+
+                # If the count for this IP is greater than the 
+                # the greatest count we've seen so far
+                if ip_counts[ip] > max_count:
+                    # Update the max count, and the most common IP
+                    max_count = ip_counts[ip]
+                    most_common_IP = ip
+                
+                # Add the logs for the IP to the dictionary
+                if ip in logs:
+                    logs[ip].append(line)
+                else:
+                    logs[ip] = []
+                    logs[ip].append(line)
+
+print(f'Most common IP address:\t\t{most_common_IP}')
+
+# Write the logs to a file
+filename = f'{most_common_IP}.log'
+print(f'Writing logs to:\t\t{filename}')
+f = open(filename, 'w')
+f.writelines(logs[most_common_IP])
