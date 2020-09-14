@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [[ -z $1 ]]
+then
+    echo "Usage:    $0 <file>"
+    exit 1
+fi
+
+if [[ ! -f $1 ]]
+then
+    echo "'$1' is not a file"
+    exit 1
+fi
+
+# Regular expression to get protocols
+PROTOCOL="PROTO=\w+\b"
+
+# grep  --> Find all instances of PROTO=XXX in the file
+# cut   --> Get the value after the equal sign
+# sort  --> Sort 
+# uniq  --> Count how many times each protocol is present
+# sort  --> Sort by count of protocols
+grep -Po "${PROTOCOL}" $1 | cut -d'=' -f 2 | sort | uniq -c | sort -h
