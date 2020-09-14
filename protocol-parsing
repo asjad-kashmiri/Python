@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+
+if len(sys.argv) < 2:
+    print('Usage:    warmup2.py <file>')
+    exit(1)
+
+# Regex to find protocol 
+protocol_regex = re.compile('PROTO=\w+')
+# Dictionary to hold protocols, and their counts
+protocol_counts = {}
+
+# Open the file, and read its contents into a list
+f = open(sys.argv[1], 'r')
+contents = f.readlines()
+
+# Loop over each line in the file
+for line in contents:
+    # Search for the protocol on the current line
+    protocol_match = re.search(protocol_regex, line)
+
+    # If the protocol was found...
+    if protocol_match:
+        # Get the protocol from the string
+        # 'PROTO=TCP'.split('=') --> ['PROTO', 'TCP']
+        protocol = protocol_match.group().split('=')[1]
+
+        if protocol in protocol_counts:
+            # If the protocol is in the dictionary increment it
+            protocol_counts[protocol] += 1
+        else:
+            # If the protocol is not in the dictionary add it,
+            # and set its value to 1
+            protocol_counts[protocol] = 1
+
+# Print the count of each protocol
+for protocol, count in protocol_counts.items():
+    print(f'{count}\t{protocol}')
