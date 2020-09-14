@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import socket
+import sys
+
+HOST = sys.argv[1]
+PORT = int(sys.argv[2])
+ADDR = (HOST, PORT)
+
+def connect():
+    #connect to server
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(ADDR)
+        #recv inital message from server
+        msg = s.recv(1024)
+        #decode message
+        msg = msg.decode()
+        # splilt the message
+        msg = msg.split()
+        #debugging
+        #print(msg)
+        # strip out the number from the message
+        first_num = int(msg[4])
+        second_num = int(msg[6].strip('!'))
+
+        # placeholder solution
+        solution = 0
+
+        # if statement to decide what operator
+        if msg[3] == 'subtract':
+            solution = second_num - first_num
+        elif msg[3] == 'add':
+            solution = first_num + second_num
+        elif msg[3] == 'divide':
+            solution = round(first_num / second_num, 8)
+        else:
+            solution = first_num * second_num
+
+        # convert solution to a byte string
+        solution = f'{solution}\n'
+        solution = solution.encode()
+        #send the solution
+        s.send(solution)
+
+        #listen for answer
+        reply = s.recv(1024)
+        reply = reply.decode()
+        print(reply)
+
+        #debugging
+
+        #print(solution)
+        #print(type(solution))
+
+def main():
+    connect()
+main()
