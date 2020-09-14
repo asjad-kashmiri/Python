@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+import socket
+import sys
+HOST = sys.argv[1]
+PORT = int(sys.argv[2])
+ADDR = (HOST, PORT)
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect(ADDR)
+    msg = s.recv(1024)
+    msg = msg.decode()
+    counter = 0
+    while msg == 'Pick a number from 0-25':
+        str_message = str(counter)
+        en_message = str_message.encode()
+        s.send(en_message + '\n')
+        message += 1
+    print(counter)
+    print(msg)
