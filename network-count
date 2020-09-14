@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+import sys
+import re
+import os
+
+ip_count = {}
+
+
+def read_log(logfile):
+    with open (logfile, 'r') as f:
+        for line in f:
+            read_src(line)
+            read_dst(line)
+
+
+def read_dst(line):
+    search = re.search(r"DST=\b(?:\d{1,3}\.){3}\d{1,3}\b", line)
+    if search != None:
+        dst = search[0]
+        dst_format = dst[4:]
+        append_dict(dst_format)
+
+def read_src(line):
+    search = re.search(r"SRC=\b(?:\d{1,3}\.){3}\d{1,3}\b", line)
+    if search != None:
+        src = search[0]
+        src_format = src[4:]
+        append_dict(src_format)
+
+def append_dict(line, count=1):
+    if line in ip_count.keys():
+        ip_count[line] += count
+    else:
+        ip_count.update({line : count})
+
+
+
+def main():
+    logfile = sys.argv[1]
+    read_log(logfile)
+    print(ip_count)
+
+if __name__ == '__main__':
+    main()
